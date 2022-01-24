@@ -1,4 +1,7 @@
 straight/
 auto-save-list/
 transient/
+elpa/
+*.cache
+*.eld
 
