@@ -14,6 +14,26 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; Emacs special treatment
+
+(defun find-erlang-emacs-tools ()
+  (if (file-directory-p "/usr/lib/erlang")
+      (let* ((libs-dir (directory-files "/usr/lib/erlang/lib"))
+	     (tools-dir-name (seq-find (lambda (f) (string-match "^tools-*" f)) libs-dir))
+	     (tools-full-path (expand-file-name tools-dir-name "/usr/lib/erlang/lib")))
+	(expand-file-name "emacs" tools-full-path))
+    nil))
+
+(defun init-emacs (tools-dir)
+  (setq load-path (cons tools-dir load-path))
+  (require 'erlang-start))
+
+
+(let ((erlang-tools-dir (find-erlang-emacs-tools)))
+  (if erlang-tools-dir 
+    (init-emacs erlang-tools-dir)
+    nil))
+
 ;; -- Configuration
 
 (setq
@@ -49,6 +69,7 @@
 	;; Helm
 	helm
 	helm-company
+	helm-projectile
 
 	general ;; keybinding macros
 
@@ -57,6 +78,7 @@
 	lsp-ui
 	flycheck
 	dap-mode ;; debugger protocol
+	smartparens
 
 	;; Required by evil
 	undo-fu)))
@@ -70,15 +92,12 @@
 (use-package helm
   :bind ("M-x" . 'helm-M-x))
 
-(use-package company
-  :bind ("<tab>" . 'company-indent-or-complete-common)
-  :config (global-company-mode))
-
 (use-package neotree
   :init (setq
 	 neo-keymap-style 'concise
 	 neo-smart-open 1)
-  :bind ("M-<tab>" . neotree-toggle))
+  :bind (("M-<tab>" . neotree-toggle)
+	 ("C-<tab>" . neotree-show)))
 
 (use-package which-key
   :init (setq which-key-popup-type 'minibuffer)
@@ -92,12 +111,19 @@
 (use-package evil-collection
   :after evil
   :init (setq evil-want-integration t
-	      evil-collection-mode-list '(magit neotree dired company))
+	      evil-collection-mode-list '(magit neotree dired company ibuffer))
   :config (evil-collection-init))
 
 (use-package projectile
   :config (projectile-mode 1)
   :bind ("C-c p" . projectile-command-map))
+
+(use-package helm-projectile
+  :after helm
+  :config (helm-projectile-on))
+
+(use-package company
+  :config (global-company-mode))
 
 ;; -- UI Resets
 
@@ -114,6 +140,9 @@
 (set-frame-font (font-spec :family "tamsyn" :size 16))
 
 ;; Keybindings TODO
+
+(general-define-key
+ "C-x C-b" 'ibuffer)
 
 ;; open the config
 (find-file-existing "~/.emacs.d/init.el")
