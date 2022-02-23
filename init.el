@@ -14,7 +14,7 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-;; Emacs special treatment
+;; erlang special treatment
 
 (defun find-erlang-emacs-tools ()
   (if (file-directory-p "/usr/lib/erlang")
@@ -28,11 +28,13 @@
   (setq load-path (cons tools-dir load-path))
   (require 'erlang-start))
 
-
 (let ((erlang-tools-dir (find-erlang-emacs-tools)))
   (if erlang-tools-dir 
     (init-emacs erlang-tools-dir)
     nil))
+
+(defvar first-buffer-hook nil)
+(put 'first-buffer-hook 'permanent-local t)
 
 ;; -- Configuration
 
@@ -46,6 +48,10 @@
       ;; Disable backup
       make-backup-files nil
 
+      ;; ASDF Shims
+
+      exec-path (append exec-path '("~/.asdf/shims/"))
+
       inhibit-startup-message t
       initial-scratch-message ";; so above as below"
       cursor-type 'bar)
@@ -58,10 +64,12 @@
 	evil-collection
 	projectile
 	neotree
-	elixir-mode
 	which-key
 	magit
 	solarized-theme
+
+	;; Languages
+	elixir-mode
 
 	;; Completion at point
 	company
@@ -106,7 +114,7 @@
 (use-package evil
   :init
   (setq evil-want-keybinding nil)
-  :config (evil-mode 1))
+  :config (evil-mode +1))
 
 (use-package evil-collection
   :after evil
@@ -124,6 +132,31 @@
 
 (use-package company
   :config (global-company-mode))
+
+(use-package smartparens
+
+  :hook (elixir-mode . elisp-mode)
+  :commands sp-pair sp-local-pair sp-with-modes sp-point-in-comment sp-point-in-string
+  :config
+
+  (require 'smartparens-config)
+
+  (with-eval-after-load 'evil
+
+    (setq sp-show-pair-from-inside t)
+    (setq sp-cancel-autoskip-on-backward-movement nil)
+    (setq sp-pair-overlay-keymap (make-sparse-keymap)))
+
+  (setq sp-max-prefix-length 25)
+  (setq sp-max-pair-length 4)
+
+  (add-hook 'eval-expression-minibuffer-setup-hook
+	    (lambda () (when smartparens-global-mode (smartparens-mode +1))))
+
+  (add-hook 'minibuffer-setup-hook
+	    (lambda () (when (and smartparens-global-mode (memq this-command '(evil-ex)))
+			 (smartparens-mode + 1))))
+  (smartparens-mode +1))
 
 ;; -- UI Resets
 
