@@ -78,6 +78,7 @@
 	helm
 	helm-company
 	helm-projectile
+	helm-rg
 
 	general ;; keybinding macros
 
@@ -103,7 +104,8 @@
 (use-package neotree
   :init (setq
 	 neo-keymap-style 'concise
-	 neo-smart-open 1)
+	 neo-smart-open 1
+	 neo-window-fixed-size nil)
   :bind (("M-<tab>" . neotree-toggle)
 	 ("C-<tab>" . neotree-show)))
 
@@ -124,11 +126,17 @@
 
 (use-package projectile
   :config (projectile-mode 1)
-  :bind ("C-c p" . projectile-command-map))
+  :bind ("C-c p" . projectile-command-map)
+  :init (setq projectile-enable-caching 1))
 
 (use-package helm-projectile
   :after helm
   :config (helm-projectile-on))
+
+(use-package helm-rg
+  :after helm
+  :custom-face
+  (helm-rg-file-match-face ((t (:foreground "black" :underline t)))))
 
 (use-package company
   :config (global-company-mode))
@@ -179,3 +187,4 @@
 
 ;; open the config
 (find-file-existing "~/.emacs.d/init.el")
+
