@@ -16,27 +16,31 @@
 
 ;; erlang special treatment
 
-(defun find-erlang-emacs-tools ()
-  (if (file-directory-p "/usr/lib/erlang")
-      (let* ((libs-dir (directory-files "/usr/lib/erlang/lib"))
-	     (tools-dir-name (seq-find (lambda (f) (string-match "^tools-*" f)) libs-dir))
-	     (tools-full-path (expand-file-name tools-dir-name "/usr/lib/erlang/lib")))
-	(expand-file-name "emacs" tools-full-path))
-    nil))
+(defun find-erlang-emacs-tools (search-path)
+  (when-let* ((dir-exists (file-directory-p search-path))
+        (libs-dir (expand-file-name "lib/" search-path))
+	    (tools-dir (seq-find (lambda (f) (string-match "^tools-*" f)) (directory-files libs-dir)))
+	    (tools-full-path (expand-file-name tools-dir libs-dir)))
+	(expand-file-name "emacs" tools-full-path)))
+
 
 (defun init-emacs (tools-dir)
   (setq load-path (cons tools-dir load-path))
   (require 'erlang-start))
 
-(let ((erlang-tools-dir (find-erlang-emacs-tools)))
-  (if erlang-tools-dir 
-    (init-emacs erlang-tools-dir)
-    nil))
 
-(defvar first-buffer-hook nil)
-(put 'first-buffer-hook 'permanent-local t)
+(if-let (erlang-tools-dir (find-erlang-emacs-tools "/usr/lib/erlang"))
+    (init-emacs erlang-tools-dir)
+    (display-warning :warning "Could not find erlang directory"))
 
 ;; -- Configuration
+
+(setq-default indent-tabs-mode nil
+	      tab-always-indent nil
+	      tab-width 4
+
+	      fill-column 80
+	      word-wrap t)
 
 (setq
       ;; Garbage collect every 10MB
@@ -49,7 +53,6 @@
       make-backup-files nil
 
       ;; ASDF Shims
-
       exec-path (append exec-path '("~/.asdf/shims/"))
 
       inhibit-startup-message t
@@ -69,7 +72,9 @@
 	solarized-theme
 
 	;; Languages
+
 	elixir-mode
+	alchemist
 
 	;; Completion at point
 	company
@@ -143,14 +148,15 @@
 
 (use-package smartparens
 
-  :hook (elixir-mode . elisp-mode)
-  :commands sp-pair sp-local-pair sp-with-modes sp-point-in-comment sp-point-in-string
   :config
 
   (require 'smartparens-config)
 
-  (with-eval-after-load 'evil
+  (setq sp-highlight-pair-overlay nil
+	sp-highlight-wrap-overlay nil
+	sp-highlight-wrap-tag-overlay nil)
 
+  (with-eval-after-load 'evil
     (setq sp-show-pair-from-inside t)
     (setq sp-cancel-autoskip-on-backward-movement nil)
     (setq sp-pair-overlay-keymap (make-sparse-keymap)))
@@ -164,7 +170,8 @@
   (add-hook 'minibuffer-setup-hook
 	    (lambda () (when (and smartparens-global-mode (memq this-command '(evil-ex)))
 			 (smartparens-mode + 1))))
-  (smartparens-mode +1))
+
+  (smartparens-global-strict-mode +1))
 
 ;; -- UI Resets
 
@@ -179,8 +186,6 @@
 (scroll-bar-mode -1)
 
 (set-frame-font (font-spec :family "tamsyn" :size 16))
-
-;; Keybindings TODO
 
 (general-define-key
  "C-x C-b" 'ibuffer)
