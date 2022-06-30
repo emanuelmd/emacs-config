@@ -1,4 +1,3 @@
-;; -- Straight.el
 
 (defvar bootstrap-version)
 
@@ -37,7 +36,7 @@
 
 (setq-default indent-tabs-mode nil
 	      tab-always-indent nil
-	      tab-width 4
+	      tab-width 2
 
 	      fill-column 80
 	      word-wrap t)
@@ -51,6 +50,9 @@
 
       ;; Disable backup
       make-backup-files nil
+
+      ;; Disable autosave
+      auto-save-default nil
 
       ;; ASDF Shims
       exec-path (append exec-path '("~/.asdf/shims/"))
@@ -75,6 +77,10 @@
 
 	elixir-mode
 	alchemist
+  mix
+
+  tide
+	typescript-mode
 
 	;; Completion at point
 	company
@@ -94,6 +100,12 @@
 	dap-mode ;; debugger protocol
 	smartparens
 
+  ;; Other
+
+  docker
+  dockerfile-mode
+  swiper
+
 	;; Required by evil
 	undo-fu)))
   (mapcar 'straight-use-package packages))
@@ -110,6 +122,8 @@
   :init (setq
 	 neo-keymap-style 'concise
 	 neo-smart-open 1
+     neo-create-file-auto-open 1
+     neo-window-width 35
 	 neo-window-fixed-size nil)
   :bind (("M-<tab>" . neotree-toggle)
 	 ("C-<tab>" . neotree-show)))
@@ -173,6 +187,13 @@
 
   (smartparens-global-strict-mode +1))
 
+(use-package docker
+  :bind ("C-c d" . docker))
+
+(use-package elixir-mode
+  :config
+  (add-hook 'elixir-mode-hook (lambda () (add-hook 'before-save-hook 'elixir-format nil t))))
+
 ;; -- UI Resets
 
 ;; Relative line number
@@ -185,10 +206,13 @@
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 
-(set-frame-font (font-spec :family "tamsyn" :size 16))
+(set-frame-font (font-spec :family "tamsyn" :size 18))
 
 (general-define-key
- "C-x C-b" 'ibuffer)
+ "C-x C-b" 'ibuffer
+ "C-x b" 'ibuffer
+ "C-c p a" 'projectile-add-known-project
+ "C-s" 'swiper)
 
 ;; open the config
 (find-file-existing "~/.emacs.d/init.el")
