@@ -24,11 +24,10 @@
 
 
 (defun init-emacs (tools-dir)
-  (setq load-path (cons tools-dir load-path))
+  (add-to-list 'load-path tools-dir)
   (require 'erlang-start))
 
-
-(if-let (erlang-tools-dir (find-erlang-emacs-tools "/usr/lib/erlang"))
+(if-let (erlang-tools-dir (find-erlang-emacs-tools "/home/emanuel/.asdf/installs/erlang/24.0.3/"))
     (init-emacs erlang-tools-dir)
     (display-warning :warning "Could not find erlang directory"))
 
@@ -54,9 +53,6 @@
       ;; Disable autosave
       auto-save-default nil
 
-      ;; ASDF Shims
-      exec-path (append exec-path '("~/.asdf/shims/"))
-
       inhibit-startup-message t
       initial-scratch-message ";; so above as below"
       cursor-type 'bar)
@@ -76,28 +72,18 @@
 	;; Languages
 
 	elixir-mode
-	alchemist
   mix
+  alchemist
 
-  tide
 	typescript-mode
-
-	;; Completion at point
-	company
 
 	;; Helm
 	helm
-	helm-company
 	helm-projectile
 	helm-rg
 
-	general ;; keybinding macros
+	general ;; Keybinding macros
 
-	;; Language server
-	lsp-mode
-	lsp-ui
-	flycheck
-	dap-mode ;; debugger protocol
 	smartparens
 
   ;; Other
@@ -106,11 +92,14 @@
   dockerfile-mode
   swiper
 
+  exec-path-from-shell
+
 	;; Required by evil
 	undo-fu)))
   (mapcar 'straight-use-package packages))
 
 (use-package el-patch :straight t)
+
 (require 'use-package)
 
 ;; Individual package configuration
@@ -130,7 +119,7 @@
 
 (use-package which-key
   :init (setq which-key-popup-type 'minibuffer)
-  :config (which-key-mode 1))
+  :config (which-key-mode))
 
 (use-package evil
   :init
@@ -140,7 +129,7 @@
 (use-package evil-collection
   :after evil
   :init (setq evil-want-integration t
-	      evil-collection-mode-list '(magit neotree dired company ibuffer))
+	      evil-collection-mode-list '(magit neotree dired ibuffer))
   :config (evil-collection-init))
 
 (use-package projectile
@@ -156,9 +145,6 @@
   :after helm
   :custom-face
   (helm-rg-file-match-face ((t (:foreground "black" :underline t)))))
-
-(use-package company
-  :config (global-company-mode))
 
 (use-package smartparens
 
@@ -187,12 +173,18 @@
 
   (smartparens-global-strict-mode +1))
 
+(use-package mix
+  :config
+  (add-hook 'elixir-mode-hook 'mix-minor-mode))
+
 (use-package docker
   :bind ("C-c d" . docker))
 
 (use-package elixir-mode
   :config
   (add-hook 'elixir-mode-hook (lambda () (add-hook 'before-save-hook 'elixir-format nil t))))
+
+(exec-path-from-shell-initialize)
 
 ;; -- UI Resets
 
