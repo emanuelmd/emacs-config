@@ -23,12 +23,12 @@
 	(expand-file-name "emacs" tools-full-path)))
 
 
-(defun init-emacs (tools-dir)
+(defun init-erlang (tools-dir)
   (add-to-list 'load-path tools-dir)
   (require 'erlang-start))
 
-(if-let (erlang-tools-dir (find-erlang-emacs-tools "/home/emanuel/.asdf/installs/erlang/24.0.3/"))
-    (init-emacs erlang-tools-dir)
+(if-let (erlang-tools-dir (find-erlang-emacs-tools "/home/emanuel/.asdf/installs/erlang/22.3/"))
+    (init-erlang erlang-tools-dir)
     (display-warning :warning "Could not find erlang directory"))
 
 ;; -- Configuration
