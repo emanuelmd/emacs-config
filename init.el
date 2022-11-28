@@ -27,7 +27,7 @@
   (add-to-list 'load-path tools-dir)
   (require 'erlang-start))
 
-(if-let (erlang-tools-dir (find-erlang-emacs-tools "/home/emanuel/.asdf/installs/erlang/22.3/"))
+(if-let (erlang-tools-dir (find-erlang-emacs-tools "/home/emanuel/.asdf/installs/erlang/24.3/"))
     (init-erlang erlang-tools-dir)
     (display-warning :warning "Could not find erlang directory"))
 
