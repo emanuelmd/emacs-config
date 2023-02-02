@@ -1,4 +1,3 @@
-
 (defvar bootstrap-version)
 
 (let ((bootstrap-file
@@ -21,7 +20,6 @@
 	    (tools-dir (seq-find (lambda (f) (string-match "^tools-*" f)) (directory-files libs-dir)))
 	    (tools-full-path (expand-file-name tools-dir libs-dir)))
 	(expand-file-name "emacs" tools-full-path)))
-
 
 (defun init-erlang (tools-dir)
   (add-to-list 'load-path tools-dir)
@@ -72,8 +70,6 @@
 	;; Languages
 
 	elixir-mode
-  mix
-  alchemist
 
 	typescript-mode
 
@@ -173,10 +169,6 @@
 
   (smartparens-global-strict-mode +1))
 
-(use-package mix
-  :config
-  (add-hook 'elixir-mode-hook 'mix-minor-mode))
-
 (use-package docker
   :bind ("C-c d" . docker))
 
@@ -190,6 +182,7 @@
 
 ;; Relative line number
 (setq display-line-numbers-type 'relative)
+(setq inhibit-splash-screen t)
 (global-display-line-numbers-mode)
 
 (load-theme 'solarized-light 1)
