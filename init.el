@@ -87,6 +87,7 @@
   docker
   dockerfile-mode
   swiper
+  yaml-mode
 
   exec-path-from-shell
 
@@ -191,7 +192,7 @@
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 
-(set-frame-font (font-spec :family "tamsyn" :size 18))
+(set-frame-font (font-spec :family "tamsyn" :size 20))
 
 (general-define-key
  "C-x C-b" 'ibuffer
