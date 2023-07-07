@@ -40,10 +40,10 @@
 
 (setq
       ;; Garbage collect every 10MB
-      gc-cons-threshold 10000000             
+      gc-cons-threshold 10000000
 
       ;; Warning when opening large files
-      large-file-warning-threshold 100000000 
+      large-file-warning-threshold 100000000
 
       ;; Disable backup
       make-backup-files nil
@@ -68,9 +68,7 @@
 	solarized-theme
 
 	;; Languages
-
 	elixir-mode
-
 	typescript-mode
 
 	;; Helm
@@ -89,13 +87,8 @@
   swiper
   yaml-mode
 
-  exec-path-from-shell
-
-	;; Required by evil
-	undo-fu)))
-  (mapcar 'straight-use-package packages))
-
-(use-package el-patch :straight t)
+  exec-path-from-shell)))
+  (mapc 'straight-use-package packages))
 
 (require 'use-package)
 
@@ -144,31 +137,9 @@
   (helm-rg-file-match-face ((t (:foreground "black" :underline t)))))
 
 (use-package smartparens
-
   :config
-
   (require 'smartparens-config)
-
-  (setq sp-highlight-pair-overlay nil
-	sp-highlight-wrap-overlay nil
-	sp-highlight-wrap-tag-overlay nil)
-
-  (with-eval-after-load 'evil
-    (setq sp-show-pair-from-inside t)
-    (setq sp-cancel-autoskip-on-backward-movement nil)
-    (setq sp-pair-overlay-keymap (make-sparse-keymap)))
-
-  (setq sp-max-prefix-length 25)
-  (setq sp-max-pair-length 4)
-
-  (add-hook 'eval-expression-minibuffer-setup-hook
-	    (lambda () (when smartparens-global-mode (smartparens-mode +1))))
-
-  (add-hook 'minibuffer-setup-hook
-	    (lambda () (when (and smartparens-global-mode (memq this-command '(evil-ex)))
-			 (smartparens-mode + 1))))
-
-  (smartparens-global-strict-mode +1))
+  (smartparens-global-mode +1))
 
 (use-package docker
   :bind ("C-c d" . docker))
@@ -192,7 +163,8 @@
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 
-(set-frame-font (font-spec :family "tamsyn" :size 20))
+;; (set-frame-font (font-spec :family "tamsyn" :size 20))
+(set-frame-font (font-spec :family "InputMonoLight" :size 16))
 
 (general-define-key
  "C-x C-b" 'ibuffer
@@ -200,6 +172,9 @@
  "C-c p a" 'projectile-add-known-project
  "C-s" 'swiper)
 
+
 ;; open the config
 (find-file-existing "~/.emacs.d/init.el")
+
+;; Style
 
