@@ -70,6 +70,7 @@
 	;; Languages
 	elixir-mode
 	typescript-mode
+  web-mode
 
 	;; Helm
 	helm
@@ -79,9 +80,11 @@
 	general ;; Keybinding macros
 
 	smartparens
+  origami
+
+  (sqlformat :type git :host github :repo "purcell/sqlformat")
 
   ;; Other
-
   docker
   dockerfile-mode
   swiper
@@ -114,7 +117,8 @@
 (use-package evil
   :init
   (setq evil-want-keybinding nil)
-  :config (evil-mode +1))
+  :config
+  (evil-mode +1))
 
 (use-package evil-collection
   :after evil
@@ -148,6 +152,14 @@
   :config
   (add-hook 'elixir-mode-hook (lambda () (add-hook 'before-save-hook 'elixir-format nil t))))
 
+(use-package sqlformat
+  :init
+  (setq sqlformat-command 'pgformatter))
+
+(use-package origami
+  :init
+  (global-origami-mode))
+
 (exec-path-from-shell-initialize)
 
 ;; -- UI Resets
@@ -157,7 +169,7 @@
 (setq inhibit-splash-screen t)
 (global-display-line-numbers-mode)
 
-(load-theme 'solarized-light 1)
+(load-theme 'solarized-light-high-contrast 1)
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -172,9 +184,21 @@
  "C-c p a" 'projectile-add-known-project
  "C-s" 'swiper)
 
-
 ;; open the config
 (find-file-existing "~/.emacs.d/init.el")
 
 ;; Style
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" default)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
